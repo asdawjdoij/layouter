@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
+@import "tailwindcss";
+
+:root {
+    --color-bg: #0F111A;        /* main background */
+    --color-surface: #1C1E2B;   /* panels, cards */
+    --color-primary: #8C6FF7;   /* main accent */
+    --color-success: #4CAF50;
+    --color-secondary: #4BD4C5; /* secondary accent */
+    --color-accent: #FF6B81;    /* highlights, hover */
+    --color-text: #E6E6E6;      /* main text */
+    --color-muted-text: #A0A0A0;/* secondary text */
+    --color-border: #2A2C3A;    /* borders, separators */
+    --color-hover: #272935;     /* hover backgrounds */
+
+    --font-display: 'Space Grotesk', sans-serif;
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+}
+
+.card {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+}
+
+input, textarea, select {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+}
+
+.hover-dark:hover {
+    background-color: var(--color-hover);
+}
+
+.container {
+    overflow-y: auto;
+}
+
+.container::-webkit-scrollbar {
+    width: 0;
+}
+
+.container::-webkit-scrollbar-track {
+    background: transparent; /* makes track invisible */
+    margin: 14px; /* vertical padding to "float" scrollbar inside container */
+}
+
+/* Scrollbar thumb (the draggable part) */
+.container::-webkit-scrollbar-thumb {
+    background-color: var(--color-border); /* thumb color */
+    border-radius: 999px; /* rounded capsule style */
+    border: 2px solid var(--color-surface); /* space around thumb to float */
+}
