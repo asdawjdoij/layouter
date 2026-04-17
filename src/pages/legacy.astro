@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+import LegacyCanvas from "@/components/LegacyCanvas.tsx";
+---
+
+<Layout>
+    <div class="flex flex-col w-full h-screen justify-center items-center md:hidden">
+        <a href="/" class="flex flex-row items-center gap-2 fade-up" style={{
+            fontFamily: "var(--font-display)",
+            animation: "fade-up 0.4s ease",
+        }}>
+            <img src="/favicon.svg" alt="Layouter Logo" class={"w-8 h-8 md:h-16 md:w-16"}/>
+            <span class={"text-3xl md:text-7xl"}>Layouter</span>
+        </a>
+        <p class="flex flex-row text-center gap-4 mt-12 text-lg px-8" style={{
+            animation: "fade-up 0.6s ease",
+        }}
+        >
+            The legacy editor is not optimized for smaller devices
+        </p>
+    </div>
+    <div class="hidden md:block">
+    <LegacyCanvas client:load />
+    </div>
+</Layout>
