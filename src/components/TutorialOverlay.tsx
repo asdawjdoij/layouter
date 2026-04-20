@@ -1,8 +1,13 @@
-const steps = [
+export const tutorialSteps = [
     {
         title: "Welcome",
         description: "This quick tour will show you how to build and arrange elements on your canvas.",
         targetId: "canvas",
+    },
+    {
+        title: "Topbar",
+        description: "Use the topbar to edit settings for your canvas.",
+        targetId: "topbar",
     },
     {
         title: "Toolbar",
@@ -37,26 +42,26 @@ const steps = [
 ];
 
 export function TutorialOverlay({ step, onNext, onBack, onClose }) {
-    const current = steps[step];
+    const current = tutorialSteps[step];
 
     const isFirst = step === 0;
-    const isLast = step === steps.length - 1;
+    const isLast = step === tutorialSteps.length - 1;
 
-    const progress = ((step + 1) / steps.length) * 100;
+    const progress = ((step + 1) / tutorialSteps.length) * 100;
 
     return (
         <div
-            className="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-lg"
+            className="fixed z-100 px-4 sm:px-0 bottom-10 left-1/2 -translate-x-1/2 w-full max-w-lg"
             style={{ fontFamily: "var(--font-display)" }}
         >
             <div
                 className="bg-[var(--color-surface)] text-[var(--color-text)] border border-[var(--color-border)] rounded-2xl shadow-2xl p-6 animate-[fade-up_0.25s_ease-out]"
             >
-                {/* Header */}
+
                 <div className="flex items-start justify-between gap-4">
                     <div>
                         <p className="text-xs uppercase tracking-wider text-[var(--color-muted-text)]">
-                            Step {step + 1} of {steps.length}
+                            Step {step + 1} of {tutorialSteps.length}
                         </p>
 
                         <h2 className="text-xl font-semibold mt-1">
@@ -66,7 +71,7 @@ export function TutorialOverlay({ step, onNext, onBack, onClose }) {
 
                     <button
                         onClick={onClose}
-                        className="text-sm text-[var(--color-muted-text)] hover:text-[var(--color-text)] transition"
+                        className="text-sm text-[var(--color-muted-text)] hover:text-[var(--color-text)] transition cursor-pointer"
                     >
                         ✕
                     </button>
@@ -83,7 +88,7 @@ export function TutorialOverlay({ step, onNext, onBack, onClose }) {
                     {current.description}
                 </p>
 
-                <div className="flex items-center justify-between mt-6">
+                <div className="flex flex-col gap-2 sm:flex-row sm:gap-0 items-center justify-between mt-6">
                     <button
                         onClick={onClose}
                         className="px-3 py-1.5 rounded-md text-sm text-[var(--color-muted-text)] hover:bg-[var(--color-hover)] transition"
