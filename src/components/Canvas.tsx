@@ -1,9 +1,9 @@
 import {useEffect, useState} from "preact/hooks";
-import {LoadingScreen} from "@/components/LoadingScreen.tsx";
+import {LoadingScreen} from "@/components/ui/LoadingScreen.tsx";
 import MainCanvas from "@/components/MainCanvas.tsx";
 import {TutorialOverlay, tutorialSteps} from "@/components/TutorialOverlay.tsx";
-import {Spotlight} from "@/components/Spotlight.tsx";
-import {Curtain} from "@/components/Curtain.tsx";
+import {Spotlight} from "@/components/ui/Spotlight.tsx";
+import {Curtain} from "@/components/ui/Curtain.tsx";
 
 export default function Canvas() {
     const [loaded, setLoaded] = useState<number>(0.0);
@@ -25,6 +25,7 @@ export default function Canvas() {
 
     return (
         <>
+
             <MainCanvas/>
 
             {showTutorial && (

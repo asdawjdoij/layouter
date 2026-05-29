@@ -1,15 +1,6 @@
 import {useEffect, useRef} from "preact/hooks";
-import {Divider} from "@/components/Divider.tsx";
+import {Divider} from "@/components/ui/Divider.tsx";
 import type {ElementType, Tool} from "@/lib/api/types.ts";
-
-const tools: { id: Tool; icon: string; label: string }[] = [
-    {id: "select", icon: "fa-solid fa-arrow-pointer", label: "Select"},
-    {id: "move", icon: "fa-solid fa-hand", label: "Move"},
-    {id: "rect", icon: "fa-regular fa-square", label: "Rectangle"},
-    {id: "text", icon: "fa-solid fa-t", label: "Text"},
-    {id: "flex", icon: "fa-solid fa-table-columns", label: "Flex"},
-    {id: "grid", icon: "fa-solid fa-border-all", label: "Grid"},
-];
 
 const elements: { label: string; items: { type: ElementType; icon: string; label: string }[] }[] = [
     {
@@ -38,6 +29,7 @@ export function Toolbar({activeTool, onToolChange, onAddElement, width, onWidthC
     width: number;
     onWidthChange: (w: number) => void;
 }) {
+
     const dragging = useRef(false);
     const startX = useRef(0);
     const startWidth = useRef(width);
@@ -101,38 +93,10 @@ export function ToolbarContents({activeTool, onToolChange, onAddElement, collaps
 }) {
     return (
         <>
-            <div className="px-3 pt-3 pb-2">
-                {!collapsed && (
-                    <p className="text-[10px] uppercase tracking-widest font-semibold text-(--color-muted-text) px-1 mb-2"
-                       style={{fontFamily: "var(--font-display)"}}>
-                        Tools
-                    </p>
-                )}
-                <div className={`grid gap-1 ${collapsed ? "grid-cols-1" : "grid-cols-3"}`}>
-                    {tools.map((tool) => (
-                        <button
-                            key={tool.id}
-                            title={tool.label}
-                            onClick={() => onToolChange(tool.id)}
-                            className={`
-                                flex items-center justify-center py-2 rounded-lg text-xs
-                                transition-colors duration-150 cursor-pointer text-(--color-text)
-                                ${collapsed ? "flex-row px-2" : "flex-col gap-1"}
-                                ${activeTool === tool.id ? "bg-(--color-hover)" : "hover:bg-(--color-hover)"}
-                            `}
-                            style={{fontFamily: "var(--font-display)"}}
-                        >
-                            <i className={`${tool.icon} text-sm`}></i>
-                            {!collapsed && <span className="text-[10px] leading-none">{tool.label}</span>}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
             <div className="pt-2 pb-4 flex flex-col gap-4">
                 {elements.map((group) => (
                     <>
-                        <Divider/>
+                        {elements.indexOf(group) !== 0 ? <Divider/> : null}
                         <div className="px-2" key={group.label}>
                             {!collapsed && (
                                 <p className="text-[10px] uppercase tracking-widest font-semibold text-(--color-muted-text) px-1 mb-2"
@@ -146,6 +110,11 @@ export function ToolbarContents({activeTool, onToolChange, onAddElement, collaps
                                         key={el.type}
                                         title={el.label}
                                         onClick={() => onAddElement(el.type, el.label)}
+                                        draggable
+                                        onDragStart={(e) => {
+                                            e.dataTransfer?.setData("elementType", el.type);
+                                            e.dataTransfer?.setData("elementLabel", el.label);
+                                        }}
                                         className={`
                                             flex items-center w-full rounded-lg text-sm
                                             hover:bg-(--color-hover) transition-colors duration-150 cursor-pointer

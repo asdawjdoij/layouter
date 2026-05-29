@@ -1,4 +1,6 @@
-import {useState} from "preact/hooks";
+import {useEffect, useState} from "preact/hooks";
+import {Curtain} from "@/components/ui/Curtain.tsx";
+import {LoadingScreen} from "@/components/ui/LoadingScreen.tsx";
 
 const makeBox = (i: number) => ({
     id: Math.random().toString().substring(2, 8), label: `Box ${i + 1}`,
@@ -160,6 +162,7 @@ export default function LegacyCanvas() {
     const [boxes, setBoxes] = useState([]);
     const [selectedId, setSelectedId] = useState(null);
     const [copied, setCopied] = useState(false);
+    const [loaded, setLoaded] = useState<number>(0.0);
 
     const selectedBox = boxes.find(b => b.id === selectedId) ?? null;
 
@@ -178,11 +181,26 @@ export default function LegacyCanvas() {
         setSelectedId(b.id);
     };
 
+    useEffect(() => {
+        const id = setInterval(() => {
+            setLoaded(p => {
+                if (p >= 100) {
+                    clearInterval(id);
+                    return 100;
+                }
+                return Math.min(100, p + Math.random() * 3.5 + 0.5);
+            });
+        }, 5);
+        return () => clearInterval(id);
+    });
+
     const code = buildCode(container, boxes);
 
     return (
         <div className="flex h-screen text-[var(--color-text)] text-sm overflow-hidden bg-[var(--color-bg)]">
-
+            <Curtain reveal={loaded >= 100}>
+                <LoadingScreen progress={loaded}/>
+            </Curtain>
             <div
                 className="w-52 shrink-0 border-r border-[var(--color-border)] bg-[var(--color-surface)] flex flex-col overflow-y-auto">
                 <div className="p-3">

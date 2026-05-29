@@ -15,21 +15,6 @@ export const tutorialSteps = [
         targetId: "toolbar",
     },
     {
-        title: "Drag & Drop",
-        description: "Click and drag elements from the toolbar onto the canvas to start building.",
-        targetId: "canvas",
-    },
-    {
-        title: "Edit Elements",
-        description: "Select any element on the canvas to move, resize, or edit its properties.",
-        targetId: "canvas",
-    },
-    {
-        title: "Layers / Structure",
-        description: "Manage overlapping elements and structure your design for better organization.",
-        targetId: "layers",
-    },
-    {
         title: "Canvas",
         description: "This is your workspace where you freely arrange and design your layout.",
         targetId: "canvas",
@@ -37,11 +22,16 @@ export const tutorialSteps = [
     {
         title: "Finish",
         description: "You're ready to start building! Explore and experiment with your canvas.",
-        targetId: "canvas",
+        targetId: "none",
     },
 ];
 
-export function TutorialOverlay({ step, onNext, onBack, onClose }) {
+export function TutorialOverlay({ step, onNext, onBack, onClose }: {
+    step: number;
+    onNext: () => void;
+    onBack: () => void;
+    onClose: () => void;
+}) {
     const current = tutorialSteps[step];
 
     const isFirst = step === 0;
