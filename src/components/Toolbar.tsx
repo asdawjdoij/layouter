@@ -1,6 +1,6 @@
 import {useEffect, useRef} from "preact/hooks";
 import {Divider} from "@/components/ui/Divider.tsx";
-import type {ElementType, Tool} from "@/lib/api/types.ts";
+import type {ElementType} from "@/lib/api/types.ts";
 
 const elements: { label: string; items: { type: ElementType; icon: string; label: string }[] }[] = [
     {
@@ -22,9 +22,7 @@ const elements: { label: string; items: { type: ElementType; icon: string; label
     },
 ];
 
-export function Toolbar({activeTool, onToolChange, onAddElement, width, onWidthChange}: {
-    activeTool: Tool;
-    onToolChange: (t: Tool) => void;
+export function Toolbar({onAddElement, width, onWidthChange}: {
     onAddElement: (type: ElementType, label: string) => void;
     width: number;
     onWidthChange: (w: number) => void;
@@ -61,8 +59,6 @@ export function Toolbar({activeTool, onToolChange, onAddElement, width, onWidthC
                 className="h-full w-full border-r border-(--color-border) flex flex-col overflow-y-auto overflow-x-hidden bg-(--color-surface)"
             >
                 <ToolbarContents
-                    activeTool={activeTool}
-                    onToolChange={onToolChange}
                     onAddElement={onAddElement}
                     collapsed={collapsed}
                 />
@@ -85,9 +81,7 @@ export function Toolbar({activeTool, onToolChange, onAddElement, width, onWidthC
     );
 }
 
-export function ToolbarContents({activeTool, onToolChange, onAddElement, collapsed}: {
-    activeTool: Tool;
-    onToolChange: (t: Tool) => void;
+export function ToolbarContents({onAddElement, collapsed}: {
     onAddElement: (type: ElementType, label: string) => void;
     collapsed: boolean;
 }) {

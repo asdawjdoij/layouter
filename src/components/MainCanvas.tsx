@@ -1,28 +1,17 @@
 import {useRef, useState} from "preact/hooks";
 import {Toolbar, ToolbarContents} from "@/components/Toolbar.tsx";
-import type {CanvasElement, ElementType, Tool} from "@/lib/api/types.ts";
-import {addChildToElement, updateElementProps, deleteElement, findElement} from "@/lib/utils.ts";
-import {CanvasElementRenderer} from "@/components/CanvasElementRenderer.tsx";
-import {Menu} from "@/components/ui/Menu.tsx";
-import {Divider} from "@/components/ui/Divider.tsx";
+import type {CanvasElement, ElementType} from "@/lib/api/types.ts";
 import {Code} from "@/components/ui/Code.tsx";
 import {renderElToString} from "@/lib/tailwind.ts";
-
-interface ContextMenuState {
-    element: CanvasElement;
-    x: number;
-    y: number;
-}
+import {Divider} from "@/components/ui/Divider.tsx";
 
 export default function MainCanvas() {
     const canvasRef = useRef<HTMLDivElement>(null);
     const [settings, setSettings] = useState(false);
     const [code, setCode] = useState(false);
-    const [activeTool, setActiveTool] = useState<Tool>("select");
     const [canvasElements, setCanvasElements] = useState<CanvasElement[]>([]);
     const [toolbarWidth, setToolbarWidth] = useState(208);
     const [mobileOpen, setMobileOpen] = useState(false);
-    const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
 
     const draggingEl = useRef<{
         id: string;
@@ -58,19 +47,6 @@ export default function MainCanvas() {
         addElement(type, label, e.clientX - bounds.left, e.clientY - bounds.top);
     }
 
-    function onDropIntoContainer(parentId: string, type: ElementType, label: string) {
-        const child: CanvasElement = {
-            id: crypto.randomUUID(),
-            type,
-            label,
-            x: 0,
-            y: 0,
-            props: {},
-            children: [],
-        };
-        setCanvasElements(prev => addChildToElement(prev, parentId, child));
-    }
-
     function onElMouseDown(e: MouseEvent, id: string) {
         if (e.button !== 0) return;
         e.stopPropagation();
@@ -101,29 +77,6 @@ export default function MainCanvas() {
         draggingEl.current = null;
         document.body.style.cursor = "";
         document.body.style.userSelect = "";
-    }
-
-    function onElContextMenu(e: MouseEvent, id: string) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const element = findElement(canvasElements, id);
-
-        if (!element) return;
-        setContextMenu({element, x: e.clientX, y: e.clientY});
-    }
-
-    function updateElProps(id: string, props: Partial<CanvasElement["props"]>) {
-        setCanvasElements(prev => updateElementProps(prev, id, props));
-        setContextMenu(prev => {
-            if (!prev || prev.element.id !== id) return prev;
-            return {...prev, el: {...prev.element, props: {...prev.element.props, ...props}}};
-        });
-    }
-
-
-    function deleteEl(id: string) {
-        setCanvasElements(prev => deleteElement(prev, id));
     }
 
     return (
@@ -234,11 +187,6 @@ export default function MainCanvas() {
                     </li>
                     <Divider/>
                     <ToolbarContents
-                        activeTool={activeTool}
-                        onToolChange={(t) => {
-                            setActiveTool(t);
-                            setMobileOpen(false);
-                        }}
                         onAddElement={addElement}
                         collapsed={false}
                     />
@@ -247,8 +195,6 @@ export default function MainCanvas() {
 
             <div className="flex flex-1 overflow-hidden">
                 <Toolbar
-                    activeTool={activeTool}
-                    onToolChange={setActiveTool}
                     onAddElement={addElement}
                     width={toolbarWidth}
                     onWidthChange={setToolbarWidth}
@@ -285,30 +231,12 @@ export default function MainCanvas() {
                                     cursor: "grab",
                                 }}
                             >
-                                <CanvasElementRenderer
-                                    el={el}
-                                    activeTool={activeTool}
-                                    onDrop={onDropIntoContainer}
-                                    onContextMenu={onElContextMenu}
-                                    onMouseDown={onElMouseDown}
-                                    isRoot={true}
-                                />
                             </div>
                         ))}
                     </div>
                 </main>
             </div>
 
-            {contextMenu && (
-                <Menu
-                    el={contextMenu.element}
-                    x={contextMenu.x}
-                    y={contextMenu.y}
-                    onUpdate={updateElProps}
-                    onDelete={deleteEl}
-                    onClose={() => setContextMenu(null)}
-                />
-            )}
         </div>
     );
 }

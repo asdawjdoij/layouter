@@ -45,18 +45,6 @@ input, textarea, select {
     width: 0;
 }
 
-.container::-webkit-scrollbar-track {
-    background: transparent; /* makes track invisible */
-    margin: 14px; /* vertical padding to "float" scrollbar inside container */
-}
-
-/* Scrollbar thumb (the draggable part) */
-.container::-webkit-scrollbar-thumb {
-    background-color: var(--color-border); /* thumb color */
-    border-radius: 999px; /* rounded capsule style */
-    border: 2px solid var(--color-surface); /* space around thumb to float */
-}
-
 @keyframes fade-up {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: translateY(0); }

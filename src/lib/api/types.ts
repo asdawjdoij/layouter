@@ -20,13 +20,4 @@ export type CanvasElement = {
     };
     children?: CanvasElement[];
 };
-
-export interface Rect {
-    top: number;
-    left: number;
-    width: number;
-    height: number;
-}
-
-export type Tool = "select" | "move" | "rect" | "text" | "flex" | "grid";
 export type ElementType = "div" | "text" | "image" | "button" | "flex-row" | "flex-col" | "grid";

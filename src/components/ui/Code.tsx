@@ -1,25 +1,28 @@
-import type { CanvasElement } from "@/lib/api/types.ts";
-import { elToTailwind } from "@/lib/tailwind.ts";
+import type {CanvasElement} from "@/lib/api/types.ts";
+import {elToTailwind} from "@/lib/tailwind.ts";
 
-interface Props { el: CanvasElement; indent: number; }
+interface Props {
+    el: CanvasElement;
+    indent: number;
+}
 
 const C = {
-    tag:     "text-[#7dd3fc]",
-    attr:    "text-[#86efac]",
-    string:  "text-[#fca5a5]",
-    cls:     "text-[#fde68a]",
-    punct:   "text-[#94a3b8]",   // slate-400
+    tag: "text-[#7dd3fc]",
+    attr: "text-[#86efac]",
+    string: "text-[#fca5a5]",
+    cls: "text-[#fde68a]",
+    punct: "text-[#94a3b8]",
     comment: "text-[#64748b] italic",
 };
 
-export function Code({ el, indent }: Props) {
+export function Code({el, indent}: Props) {
     const pad = "  ".repeat(indent);
     const classes = elToTailwind(el);
     const hasChildren = el.children && el.children.length > 0;
     const isSelfClosing = !hasChildren && el.type !== "container";
 
     return (
-        <div style={{ fontFamily: "var(--font-mono, 'Fira Code', monospace)" }}>
+        <div style={{fontFamily: "var(--font-mono, 'Fira Code', monospace)"}}>
             {/* opening tag line */}
             <div className="flex flex-wrap gap-x-1 whitespace-pre">
                 <span className={C.punct}>{pad}&lt;</span>
@@ -42,7 +45,7 @@ export function Code({ el, indent }: Props) {
             </div>
 
             {hasChildren && el.children!.map(child => (
-                <Code key={child.id} el={child} indent={indent + 1} />
+                <Code key={child.id} el={child} indent={indent + 1}/>
             ))}
 
             {hasChildren && (
