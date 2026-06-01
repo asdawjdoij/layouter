@@ -1,7 +1,7 @@
-import { c as createComponent } from './astro-component_z8sE6YCk.mjs';
+import { c as createComponent } from './astro-component_BaT95kLv.mjs';
 import 'piccolore';
-import { l as renderComponent, r as renderTemplate, m as maybeRenderHead, h as addAttribute } from './entrypoint_Dbo7TX6Z.mjs';
-import { $ as $$Layout } from './Layout_VoJM4qyM.mjs';
+import { l as renderComponent, r as renderTemplate, m as maybeRenderHead, h as addAttribute } from './entrypoint_Bn0PdZ4j.mjs';
+import { $ as $$Layout } from './Layout_CnNJmupc.mjs';
 import { useRef, useEffect, useState } from 'preact/hooks';
 import { C as Curtain, L as LoadingScreen } from './LoadingScreen_ac4MtoI4.mjs';
 import { jsx, Fragment, jsxs } from 'preact/jsx-runtime';
@@ -48,8 +48,6 @@ const elements = [{
   }]
 }];
 function Toolbar({
-  activeTool,
-  onToolChange,
   onAddElement,
   width,
   onWidthChange
@@ -85,8 +83,6 @@ function Toolbar({
       id: "toolbar",
       className: "h-full w-full border-r border-(--color-border) flex flex-col overflow-y-auto overflow-x-hidden bg-(--color-surface)",
       children: jsx(ToolbarContents, {
-        activeTool,
-        onToolChange,
         onAddElement,
         collapsed
       })
@@ -110,8 +106,6 @@ function Toolbar({
   });
 }
 function ToolbarContents({
-  activeTool,
-  onToolChange,
   onAddElement,
   collapsed
 }) {
@@ -157,451 +151,6 @@ function ToolbarContents({
         }, group.label)]
       }))
     })
-  });
-}
-
-function addChildToElement(elements, parentId, child) {
-  return elements.map((el) => {
-    if (el.id === parentId) {
-      return {
-        ...el,
-        children: [...el.children ?? [], child]
-      };
-    }
-    if (el.children?.length) {
-      return {
-        ...el,
-        children: addChildToElement(el.children, parentId, child)
-      };
-    }
-    return el;
-  });
-}
-function updateElementProps(elements, id, props) {
-  return elements.map((el) => {
-    if (el.id === id) return {
-      ...el,
-      props: {
-        ...el.props,
-        ...props
-      }
-    };
-    if (el.children?.length) {
-      return {
-        ...el,
-        children: updateElementProps(el.children, id, props)
-      };
-    }
-    return el;
-  });
-}
-function deleteElement(elements, id) {
-  return elements.filter((el) => el.id !== id).map((el) => el.children?.length ? {
-    ...el,
-    children: deleteElement(el.children, id)
-  } : el);
-}
-function findElement(elements, id) {
-  for (const el of elements) {
-    if (el.id === id) return el;
-    if (el.children?.length) {
-      const found = findElement(el.children, id);
-      if (found) return found;
-    }
-  }
-  return null;
-}
-const CONTAINER_TYPES = /* @__PURE__ */ new Set(["div", "flex-row", "flex-col", "grid"]);
-
-function CanvasElementRenderer({
-  el,
-  activeTool,
-  onDrop,
-  onContextMenu,
-  onMouseDown,
-  isRoot
-}) {
-  const p = el.props;
-  const isContainer = CONTAINER_TYPES.has(el.type);
-  function handleDragOver(e) {
-    if (!isContainer) return;
-    e.preventDefault();
-    e.stopPropagation();
-    e.currentTarget.setAttribute("data-drag-over", "true");
-  }
-  function handleDragLeave(e) {
-    e.currentTarget.removeAttribute("data-drag-over");
-  }
-  function handleDrop(e) {
-    if (!isContainer) return;
-    e.preventDefault();
-    e.stopPropagation();
-    e.currentTarget.removeAttribute("data-drag-over");
-    const type = e.dataTransfer?.getData("elementType");
-    const label = e.dataTransfer?.getData("elementLabel");
-    if (type && label) onDrop(el.id, type, label);
-  }
-  function handleContextMenu(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    onContextMenu(e, el.id);
-  }
-  function handleMouseDown(e) {
-    if (activeTool !== "move") return;
-    if (!isRoot) return;
-    onMouseDown(e, el.id);
-  }
-  const children = (el.children ?? []).map((child) => jsx(CanvasElementRenderer, {
-    el: child,
-    activeTool,
-    onDrop,
-    onContextMenu,
-    onMouseDown,
-    isRoot: false
-  }, child.id));
-  const dropProps = isContainer ? {
-    onDragOver: handleDragOver,
-    onDragLeave: handleDragLeave,
-    onDrop: handleDrop
-  } : {};
-  const sharedInteraction = {
-    onContextMenu: handleContextMenu,
-    onMouseDown: handleMouseDown
-  };
-  switch (el.type) {
-    case "text":
-      return jsx("p", {
-        ...sharedInteraction,
-        style: {
-          color: p.textColor ?? "#111",
-          fontSize: p.fontSize ? `${p.fontSize}px` : "14px",
-          margin: 0,
-          whiteSpace: "pre-wrap",
-          minWidth: 40,
-          cursor: "default",
-          userSelect: "none"
-        },
-        children: p.text ?? "Text"
-      });
-    case "image":
-      return p.src ? jsx("img", {
-        ...sharedInteraction,
-        src: p.src,
-        alt: p.alt ?? "",
-        style: {
-          width: p.width ?? 160,
-          height: p.height ?? 120,
-          objectFit: "cover",
-          borderRadius: p.borderRadius ?? 4,
-          display: "block",
-          pointerEvents: "all",
-          userSelect: "none",
-          cursor: "default"
-        }
-      }) : jsxs("div", {
-        ...sharedInteraction,
-        style: {
-          width: p.width ?? 160,
-          height: p.height ?? 120,
-          borderRadius: p.borderRadius ?? 4,
-          background: "#e5e7eb",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#9ca3af",
-          fontSize: 12,
-          cursor: "default",
-          userSelect: "none",
-          gap: 4
-        },
-        children: [jsx("i", {
-          className: "fa-regular fa-image"
-        }), " No image"]
-      });
-    case "button":
-      return jsx("button", {
-        ...sharedInteraction,
-        style: {
-          background: p.bgColor ?? "#3b82f6",
-          color: p.textColor ?? "#ffffff",
-          fontSize: p.fontSize ? `${p.fontSize}px` : "14px",
-          borderRadius: p.borderRadius ?? 6,
-          border: "none",
-          padding: "8px 16px",
-          cursor: "default",
-          userSelect: "none",
-          pointerEvents: "all"
-        },
-        children: p.text ?? "Button"
-      });
-    case "div":
-      return jsx("div", {
-        ...sharedInteraction,
-        ...dropProps,
-        style: {
-          width: p.width ?? 160,
-          height: p.height ?? 120,
-          background: p.bgColor ?? "#f3f4f6",
-          borderRadius: p.borderRadius ?? 4,
-          border: "1px dashed #d1d5db",
-          padding: p.padding ?? 8,
-          position: "relative",
-          cursor: "default",
-          boxSizing: "border-box"
-        },
-        "style-data-drag-over-outline": "2px dashed #3b82f6",
-        children: children.length ? children : jsx("span", {
-          style: {
-            fontSize: 11,
-            color: "#9ca3af",
-            userSelect: "none"
-          },
-          children: "Drop here"
-        })
-      });
-    case "flex-row":
-      return jsx("div", {
-        ...sharedInteraction,
-        ...dropProps,
-        style: {
-          display: "flex",
-          flexDirection: "row",
-          gap: p.gap ?? 8,
-          minWidth: p.width ?? 200,
-          minHeight: p.height ?? 60,
-          background: p.bgColor ?? "#f9fafb",
-          border: "1px dashed #d1d5db",
-          borderRadius: p.borderRadius ?? 4,
-          padding: p.padding ?? 8,
-          alignItems: "center",
-          boxSizing: "border-box",
-          cursor: "default",
-          flexWrap: "wrap"
-        },
-        children: children.length ? children : jsx("span", {
-          style: {
-            fontSize: 11,
-            color: "#9ca3af",
-            userSelect: "none"
-          },
-          children: "Drop here"
-        })
-      });
-    case "flex-col":
-      return jsx("div", {
-        ...sharedInteraction,
-        ...dropProps,
-        style: {
-          display: "flex",
-          flexDirection: "column",
-          gap: p.gap ?? 8,
-          minWidth: p.width ?? 120,
-          minHeight: p.height ?? 160,
-          background: p.bgColor ?? "#f9fafb",
-          border: "1px dashed #d1d5db",
-          borderRadius: p.borderRadius ?? 4,
-          padding: p.padding ?? 8,
-          boxSizing: "border-box",
-          cursor: "default"
-        },
-        children: children.length ? children : jsx("span", {
-          style: {
-            fontSize: 11,
-            color: "#9ca3af",
-            userSelect: "none"
-          },
-          children: "Drop here"
-        })
-      });
-    case "grid":
-      return jsx("div", {
-        ...sharedInteraction,
-        ...dropProps,
-        style: {
-          display: "grid",
-          gridTemplateColumns: `repeat(${p.cols ?? 2}, 1fr)`,
-          gap: p.gap ?? 8,
-          minWidth: p.width ?? 200,
-          minHeight: p.height ?? 200,
-          background: p.bgColor ?? "#f9fafb",
-          border: "1px dashed #d1d5db",
-          borderRadius: p.borderRadius ?? 4,
-          padding: p.padding ?? 8,
-          boxSizing: "border-box",
-          cursor: "default"
-        },
-        children: children.length ? children : jsx("span", {
-          style: {
-            fontSize: 11,
-            color: "#9ca3af",
-            userSelect: "none",
-            gridColumn: "1/-1"
-          },
-          children: "Drop here"
-        })
-      });
-    default:
-      return jsx("div", {
-        style: {
-          fontSize: 12,
-          color: "#6b7280"
-        },
-        children: el.label
-      });
-  }
-}
-
-function Menu({
-  el,
-  x,
-  y,
-  onUpdate,
-  onDelete,
-  onClose
-}) {
-  const ref = useRef(null);
-  const p = el.props;
-  useEffect(() => {
-    function handleClick(e) {
-      if (ref.current && !ref.current.contains(e.target)) onClose();
-    }
-    window.addEventListener("mousedown", handleClick);
-    return () => window.removeEventListener("mousedown", handleClick);
-  }, [onClose]);
-  const [pos, setPos] = useState({
-    x,
-    y
-  });
-  useEffect(() => {
-    if (!ref.current) return;
-    const {
-      width,
-      height
-    } = ref.current.getBoundingClientRect();
-    setPos({
-      x: Math.min(x, window.innerWidth - width - 8),
-      y: Math.min(y, window.innerHeight - height - 8)
-    });
-  }, [x, y]);
-  function field(label, node) {
-    return jsxs("label", {
-      className: "flex flex-col gap-1",
-      children: [jsx("span", {
-        className: "text-[10px] uppercase tracking-widest text-(--color-muted-text)",
-        style: {
-          fontFamily: "var(--font-display)"
-        },
-        children: label
-      }), node]
-    });
-  }
-  const inputCls = "w-full px-2 py-1.5 rounded-md bg-(--color-hover) border border-(--color-border) text-sm text-(--color-text) outline-none focus:ring-1 focus:ring-(--color-primary)";
-  return jsxs("div", {
-    ref,
-    className: "fixed z-[200] w-64 bg-(--color-surface) border border-(--color-border) rounded-xl shadow-2xl p-3 flex flex-col gap-3",
-    style: {
-      left: pos.x,
-      top: pos.y,
-      fontFamily: "var(--font-display)"
-    },
-    onContextMenu: (e) => e.preventDefault(),
-    children: [jsxs("div", {
-      className: "flex items-center justify-between",
-      children: [jsx("span", {
-        className: "px-4 py-2",
-        style: {
-          fontFamily: "var(--font-display)"
-        },
-        children: el.label
-      }), jsx("button", {
-        className: "px-4 py-2 hover:bg-(--color-hover) duration-300 transition-colors cursor-pointer rounded-xl",
-        onClick: onClose,
-        children: jsx("i", {
-          className: "fa-solid fa-circle-minus"
-        })
-      })]
-    }), (el.type === "text" || el.type === "button") && field("Text", jsx("input", {
-      className: inputCls,
-      value: p.text ?? (el.type === "button" ? "Button" : "Text"),
-      onInput: (e) => onUpdate(el.id, {
-        text: e.target.value
-      })
-    })), el.type === "image" && jsxs(Fragment, {
-      children: [field("Image URL", jsx("input", {
-        className: inputCls,
-        placeholder: "https://...",
-        value: p.src ?? "",
-        onInput: (e) => onUpdate(el.id, {
-          src: e.target.value
-        })
-      })), field("Alt text", jsx("input", {
-        className: inputCls,
-        value: p.alt ?? "",
-        onInput: (e) => onUpdate(el.id, {
-          alt: e.target.value
-        })
-      }))]
-    }), (el.type === "div" || el.type === "flex-row" || el.type === "flex-col" || el.type === "grid" || el.type === "image") && jsxs("div", {
-      className: "grid grid-cols-2 gap-2",
-      children: [field("Width", jsx("input", {
-        type: "number",
-        className: inputCls,
-        value: p.width ?? 120,
-        onInput: (e) => onUpdate(el.id, {
-          width: Number(e.target.value)
-        })
-      })), field("Height", jsx("input", {
-        type: "number",
-        className: inputCls,
-        value: p.height ?? 80,
-        onInput: (e) => onUpdate(el.id, {
-          height: Number(e.target.value)
-        })
-      }))]
-    }), (el.type === "text" || el.type === "button") && field("Font size", jsx("input", {
-      type: "number",
-      className: inputCls,
-      value: p.fontSize ?? 14,
-      onInput: (e) => onUpdate(el.id, {
-        fontSize: Number(e.target.value)
-      })
-    })), jsxs("div", {
-      className: "grid grid-cols-2 gap-2",
-      children: [(el.type === "div" || el.type === "flex-row" || el.type === "flex-col" || el.type === "grid" || el.type === "button") && field("Background", jsx("input", {
-        type: "color",
-        className: "w-full h-8 rounded cursor-pointer border border-(--color-border)",
-        value: p.bgColor ?? "#f3f4f6",
-        onInput: (e) => onUpdate(el.id, {
-          bgColor: e.target.value
-        })
-      })), (el.type === "text" || el.type === "button") && field("Text color", jsx("input", {
-        type: "color",
-        className: "w-full h-8 rounded cursor-pointer border border-(--color-border)",
-        value: p.textColor ?? "#000000",
-        onInput: (e) => onUpdate(el.id, {
-          textColor: e.target.value
-        })
-      }))]
-    }), field("Border radius", jsx("input", {
-      type: "number",
-      className: inputCls,
-      value: p.borderRadius ?? 4,
-      onInput: (e) => onUpdate(el.id, {
-        borderRadius: Number(e.target.value)
-      })
-    })), jsx("div", {
-      className: "border-t border-(--color-border) pt-2 mt-1",
-      children: jsxs("button", {
-        onClick: () => {
-          onDelete(el.id);
-          onClose();
-        },
-        className: "w-full text-left px-2 py-1.5 text-sm text-red-500 hover:bg-red-500/10 rounded-md transition",
-        children: [jsx("i", {
-          className: "fa-solid fa-trash mr-2 text-xs"
-        }), " Delete element"]
-      })
-    })]
   });
 }
 
@@ -723,11 +272,9 @@ function MainCanvas() {
   const canvasRef = useRef(null);
   const [settings, setSettings] = useState(false);
   const [code, setCode] = useState(false);
-  const [activeTool, setActiveTool] = useState("select");
   const [canvasElements, setCanvasElements] = useState([]);
   const [toolbarWidth, setToolbarWidth] = useState(208);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [contextMenu, setContextMenu] = useState(null);
   const draggingEl = useRef(null);
   function addElement(type, label, x = 80, y = 80) {
     setCanvasElements((prev) => [...prev, {
@@ -751,18 +298,6 @@ function MainCanvas() {
     if (!type || !label) return;
     const bounds = canvasRef.current.getBoundingClientRect();
     addElement(type, label, e.clientX - bounds.left, e.clientY - bounds.top);
-  }
-  function onDropIntoContainer(parentId, type, label) {
-    const child = {
-      id: crypto.randomUUID(),
-      type,
-      label,
-      x: 0,
-      y: 0,
-      props: {},
-      children: []
-    };
-    setCanvasElements((prev) => addChildToElement(prev, parentId, child));
   }
   function onElMouseDown(e, id) {
     if (e.button !== 0) return;
@@ -794,36 +329,6 @@ function MainCanvas() {
     draggingEl.current = null;
     document.body.style.cursor = "";
     document.body.style.userSelect = "";
-  }
-  function onElContextMenu(e, id) {
-    e.preventDefault();
-    e.stopPropagation();
-    const element = findElement(canvasElements, id);
-    if (!element) return;
-    setContextMenu({
-      element,
-      x: e.clientX,
-      y: e.clientY
-    });
-  }
-  function updateElProps(id, props) {
-    setCanvasElements((prev) => updateElementProps(prev, id, props));
-    setContextMenu((prev) => {
-      if (!prev || prev.element.id !== id) return prev;
-      return {
-        ...prev,
-        el: {
-          ...prev.element,
-          props: {
-            ...prev.element.props,
-            ...props
-          }
-        }
-      };
-    });
-  }
-  function deleteEl(id) {
-    setCanvasElements((prev) => deleteElement(prev, id));
   }
   return jsxs("div", {
     className: "w-full h-screen flex flex-col",
@@ -968,19 +473,12 @@ function MainCanvas() {
           className: "text-(--color-muted-text) fa-solid fa-code mr-2.5"
         }), "Code"]
       }), jsx(Divider, {}), jsx(ToolbarContents, {
-        activeTool,
-        onToolChange: (t) => {
-          setActiveTool(t);
-          setMobileOpen(false);
-        },
         onAddElement: addElement,
         collapsed: false
       })]
     }), jsxs("div", {
       className: "flex flex-1 overflow-hidden",
       children: [jsx(Toolbar, {
-        activeTool,
-        onToolChange: setActiveTool,
         onAddElement: addElement,
         width: toolbarWidth,
         onWidthChange: setToolbarWidth
@@ -1009,25 +507,10 @@ function MainCanvas() {
               top: el.y,
               transform: "translate(-50%, -50%)",
               cursor: "grab"
-            },
-            children: jsx(CanvasElementRenderer, {
-              el,
-              activeTool,
-              onDrop: onDropIntoContainer,
-              onContextMenu: onElContextMenu,
-              onMouseDown: onElMouseDown,
-              isRoot: true
-            })
+            }
           }, el.id))
         })]
       })]
-    }), contextMenu && jsx(Menu, {
-      el: contextMenu.element,
-      x: contextMenu.x,
-      y: contextMenu.y,
-      onUpdate: updateElProps,
-      onDelete: deleteEl,
-      onClose: () => setContextMenu(null)
     })]
   });
 }

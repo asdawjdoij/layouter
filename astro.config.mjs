@@ -18,7 +18,9 @@ export default defineConfig({
             },
         },
     },
-    adapter: vercel(),
+    adapter: vercel({
+        functionPerRoute: false,
+    }),
     output: "server",
     integrations: [preact()]
 });
